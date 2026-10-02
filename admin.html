@@ -29,7 +29,7 @@
     }
 
     .container {
-      max-width: 700px;
+      max-width: 800px;
       margin: 30px auto;
       padding: 20px;
     }
@@ -53,9 +53,7 @@
       font-weight: bold;
     }
 
-    input,
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
       padding: 13px;
       border: 1px solid #ddd;
@@ -86,11 +84,32 @@
       color: white;
     }
 
+    .delete {
+      background: #c62828;
+      color: white;
+    }
+
     .hidden {
       display: none;
     }
 
-    #message {
+    .car {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .car h3 {
+      margin: 0 0 8px;
+    }
+
+    .car p {
+      margin: 5px 0;
+      color: #555;
+    }
+
+    #message, #loginMessage {
       margin-top: 15px;
       font-weight: bold;
     }
@@ -113,10 +132,10 @@
     <h2>Connexion administrateur</h2>
 
     <label>Email</label>
-    <input type="email" id="email" placeholder="Votre email">
+    <input type="email" id="email">
 
     <label>Mot de passe</label>
-    <input type="password" id="password" placeholder="Votre mot de passe">
+    <input type="password" id="password">
 
     <button onclick="connexion()">
       Se connecter
@@ -127,64 +146,84 @@
   </div>
 
 
-  <!-- AJOUT D'UNE VOITURE -->
+  <!-- ADMIN -->
 
-  <div class="box hidden" id="adminBox">
+  <div class="hidden" id="adminBox">
 
-    <h2>Ajouter un véhicule</h2>
+    <!-- AJOUT -->
 
-    <form id="carForm">
+    <div class="box">
 
-      <label>Marque</label>
-      <input type="text" id="marque" required>
+      <h2>➕ Ajouter un véhicule</h2>
 
-      <label>Modèle</label>
-      <input type="text" id="modele" required>
+      <form id="carForm">
 
-      <label>Prix (€)</label>
-      <input type="number" id="prix" required>
+        <label>Marque</label>
+        <input type="text" id="marque" required>
 
-      <label>Année</label>
-      <input type="number" id="annee" required>
+        <label>Modèle</label>
+        <input type="text" id="modele" required>
 
-      <label>Kilométrage</label>
-      <input type="number" id="kilometrage" required>
+        <label>Prix (€)</label>
+        <input type="number" id="prix" required>
 
-      <label>Carburant</label>
-      <select id="carburant">
-        <option value="Essence">Essence</option>
-        <option value="Diesel">Diesel</option>
-        <option value="Hybride">Hybride</option>
-        <option value="Électrique">Électrique</option>
-      </select>
+        <label>Année</label>
+        <input type="number" id="annee" required>
 
-      <label>Boîte de vitesses</label>
-      <select id="boite">
-        <option value="Manuelle">Manuelle</option>
-        <option value="Automatique">Automatique</option>
-      </select>
+        <label>Kilométrage</label>
+        <input type="number" id="kilometrage" required>
 
-      <label>URL de la photo</label>
-      <input
-        type="url"
-        id="image_url"
-        placeholder="https://..."
-      >
+        <label>Carburant</label>
+        <select id="carburant">
+          <option>Essence</option>
+          <option>Diesel</option>
+          <option>Hybride</option>
+          <option>Électrique</option>
+        </select>
 
-      <label>Description</label>
-      <textarea id="description"></textarea>
+        <label>Boîte</label>
+        <select id="boite">
+          <option>Manuelle</option>
+          <option>Automatique</option>
+        </select>
 
-      <button type="submit">
-        Publier le véhicule
+        <label>URL de la photo</label>
+        <input type="url" id="image_url">
+
+        <label>Description</label>
+        <textarea id="description"></textarea>
+
+        <button type="submit">
+          Publier le véhicule
+        </button>
+
+      </form>
+
+      <div id="message"></div>
+
+    </div>
+
+
+    <!-- LISTE DES ANNONCES -->
+
+    <div class="box">
+
+      <h2>🚗 Mes véhicules</h2>
+
+      <div id="listeVoitures">
+        Chargement...
+      </div>
+
+    </div>
+
+
+    <div class="box">
+
+      <button class="logout" onclick="deconnexion()">
+        Se déconnecter
       </button>
 
-    </form>
-
-    <div id="message"></div>
-
-    <button class="logout" onclick="deconnexion()">
-      Se déconnecter
-    </button>
+    </div>
 
   </div>
 
@@ -220,30 +259,25 @@ async function connexion() {
 
   const { error } =
     await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
+      email,
+      password
     });
-
-  const message =
-    document.getElementById("loginMessage");
 
   if (error) {
 
-    message.textContent =
+    document.getElementById("loginMessage").textContent =
       "❌ Email ou mot de passe incorrect.";
 
     return;
   }
 
-  message.textContent = "";
-
-  document
-    .getElementById("loginBox")
+  document.getElementById("loginBox")
     .classList.add("hidden");
 
-  document
-    .getElementById("adminBox")
+  document.getElementById("adminBox")
     .classList.remove("hidden");
+
+  chargerVoitures();
 }
 
 
@@ -253,84 +287,165 @@ async function deconnexion() {
 
   await supabaseClient.auth.signOut();
 
-  document
-    .getElementById("adminBox")
-    .classList.add("hidden");
-
-  document
-    .getElementById("loginBox")
-    .classList.remove("hidden");
+  location.reload();
 }
 
 
 // AJOUTER UNE VOITURE
 
-document
-  .getElementById("carForm")
-  .addEventListener("submit", async function(event) {
+document.getElementById("carForm")
+.addEventListener("submit", async function(event) {
 
-    event.preventDefault();
+  event.preventDefault();
 
-    const voiture = {
+  const voiture = {
 
-      marque:
-        document.getElementById("marque").value,
+    marque: document.getElementById("marque").value,
+    modele: document.getElementById("modele").value,
+    prix: Number(document.getElementById("prix").value),
+    annee: Number(document.getElementById("annee").value),
+    kilometrage: Number(document.getElementById("kilometrage").value),
+    carburant: document.getElementById("carburant").value,
+    boite: document.getElementById("boite").value,
+    image_url: document.getElementById("image_url").value,
+    description: document.getElementById("description").value
 
-      modele:
-        document.getElementById("modele").value,
-
-      prix:
-        Number(document.getElementById("prix").value),
-
-      annee:
-        Number(document.getElementById("annee").value),
-
-      kilometrage:
-        Number(document.getElementById("kilometrage").value),
-
-      carburant:
-        document.getElementById("carburant").value,
-
-      boite:
-        document.getElementById("boite").value,
-
-      image_url:
-        document.getElementById("image_url").value,
-
-      description:
-        document.getElementById("description").value
-    };
+  };
 
 
-    const { error } =
-      await supabaseClient
-        .from("voitures")
-        .insert([voiture]);
+  const { error } =
+    await supabaseClient
+      .from("voitures")
+      .insert([voiture]);
 
 
-    const message =
-      document.getElementById("message");
+  if (error) {
+
+    document.getElementById("message").textContent =
+      "❌ Erreur : " + error.message;
+
+    return;
+  }
 
 
-    if (error) {
+  document.getElementById("message").textContent =
+    "✅ Véhicule ajouté !";
 
-      console.error(error);
+  document.getElementById("carForm").reset();
 
-      message.textContent =
-        "❌ Impossible d'ajouter le véhicule.";
+  chargerVoitures();
 
-      return;
-    }
+});
 
 
-    message.textContent =
-      "✅ Véhicule ajouté avec succès !";
+// AFFICHER LES VOITURES
 
-    document
-      .getElementById("carForm")
-      .reset();
+async function chargerVoitures() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("voitures")
+      .select("*")
+      .order("id", { ascending: false });
+
+
+  const liste =
+    document.getElementById("listeVoitures");
+
+
+  if (error) {
+
+    liste.innerHTML =
+      "❌ Impossible de charger les annonces.";
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    liste.innerHTML =
+      "Aucune voiture actuellement.";
+
+    return;
+  }
+
+
+  liste.innerHTML = "";
+
+
+  data.forEach(voiture => {
+
+    const element =
+      document.createElement("div");
+
+    element.className = "car";
+
+    element.innerHTML = `
+
+      <h3>
+        ${voiture.marque} ${voiture.modele}
+      </h3>
+
+      <p>
+        ${voiture.prix} € —
+        ${voiture.annee} —
+        ${voiture.kilometrage} km
+      </p>
+
+      <button
+        class="delete"
+        onclick="supprimerVoiture(${voiture.id})">
+        🗑️ Supprimer cette annonce
+      </button>
+
+    `;
+
+    liste.appendChild(element);
 
   });
+
+}
+
+
+// SUPPRIMER UNE VOITURE
+
+async function supprimerVoiture(id) {
+
+  const confirmation =
+    confirm(
+      "Voulez-vous vraiment supprimer cette annonce ?"
+    );
+
+
+  if (!confirmation) {
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from("voitures")
+      .delete()
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "❌ Suppression impossible : " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  alert("✅ Annonce supprimée.");
+
+  chargerVoitures();
+
+}
 
 </script>
 
