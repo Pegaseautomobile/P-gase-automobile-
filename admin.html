@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Pégase Automobile</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f5f7;
+      color: #111;
+    }
+
+    header {
+      background: #0b0d10;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header span {
+      color: #d6a84f;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .box {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      border: 0;
+      border-radius: 8px;
+      background: #d6a84f;
+      color: #111;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .logout {
+      background: #222;
+      color: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>PÉGASE <span>AUTOMOBILE</span></h1>
+  <p>Administration</p>
+</header>
+
+<div class="container">
+
+  <!-- CONNEXION -->
+
+  <div class="box" id="loginBox">
+
+    <h2>Connexion administrateur</h2>
+
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Votre email">
+
+    <label>Mot de passe</label>
+    <input type="password" id="password" placeholder="Votre mot de passe">
+
+    <button onclick="connexion()">
+      Se connecter
+    </button>
+
+    <div id="loginMessage"></div>
+
+  </div>
+
+
+  <!-- AJOUT D'UNE VOITURE -->
+
+  <div class="box hidden" id="adminBox">
+
+    <h2>Ajouter un véhicule</h2>
+
+    <form id="carForm">
+
+      <label>Marque</label>
+      <input type="text" id="marque" required>
+
+      <label>Modèle</label>
+      <input type="text" id="modele" required>
+
+      <label>Prix (€)</label>
+      <input type="number" id="prix" required>
+
+      <label>Année</label>
+      <input type="number" id="annee" required>
+
+      <label>Kilométrage</label>
+      <input type="number" id="kilometrage" required>
+
+      <label>Carburant</label>
+      <select id="carburant">
+        <option value="Essence">Essence</option>
+        <option value="Diesel">Diesel</option>
+        <option value="Hybride">Hybride</option>
+        <option value="Électrique">Électrique</option>
+      </select>
+
+      <label>Boîte de vitesses</label>
+      <select id="boite">
+        <option value="Manuelle">Manuelle</option>
+        <option value="Automatique">Automatique</option>
+      </select>
+
+      <label>URL de la photo</label>
+      <input
+        type="url"
+        id="image_url"
+        placeholder="https://..."
+      >
+
+      <label>Description</label>
+      <textarea id="description"></textarea>
+
+      <button type="submit">
+        Publier le véhicule
+      </button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <button class="logout" onclick="deconnexion()">
+      Se déconnecter
+    </button>
+
+  </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"https://rrojspgdsgxjhekyuxlq.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_qA0XGZifK4Xque85HxxsZg_lNrHgRuE";
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+
+// CONNEXION
+
+async function connexion() {
+
+  const email =
+    document.getElementById("email").value;
+
+  const password =
+    document.getElementById("password").value;
+
+  const { error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+  const message =
+    document.getElementById("loginMessage");
+
+  if (error) {
+
+    message.textContent =
+      "❌ Email ou mot de passe incorrect.";
+
+    return;
+  }
+
+  message.textContent = "";
+
+  document
+    .getElementById("loginBox")
+    .classList.add("hidden");
+
+  document
+    .getElementById("adminBox")
+    .classList.remove("hidden");
+}
+
+
+// DÉCONNEXION
+
+async function deconnexion() {
+
+  await supabaseClient.auth.signOut();
+
+  document
+    .getElementById("adminBox")
+    .classList.add("hidden");
+
+  document
+    .getElementById("loginBox")
+    .classList.remove("hidden");
+}
+
+
+// AJOUTER UNE VOITURE
+
+document
+  .getElementById("carForm")
+  .addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const voiture = {
+
+      marque:
+        document.getElementById("marque").value,
+
+      modele:
+        document.getElementById("modele").value,
+
+      prix:
+        Number(document.getElementById("prix").value),
+
+      annee:
+        Number(document.getElementById("annee").value),
+
+      kilometrage:
+        Number(document.getElementById("kilometrage").value),
+
+      carburant:
+        document.getElementById("carburant").value,
+
+      boite:
+        document.getElementById("boite").value,
+
+      image_url:
+        document.getElementById("image_url").value,
+
+      description:
+        document.getElementById("description").value
+    };
+
+
+    const { error } =
+      await supabaseClient
+        .from("voitures")
+        .insert([voiture]);
+
+
+    const message =
+      document.getElementById("message");
+
+
+    if (error) {
+
+      console.error(error);
+
+      message.textContent =
+        "❌ Impossible d'ajouter le véhicule.";
+
+      return;
+    }
+
+
+    message.textContent =
+      "✅ Véhicule ajouté avec succès !";
+
+    document
+      .getElementById("carForm")
+      .reset();
+
+  });
+
+</script>
+
+</body>
+</html>
