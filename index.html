@@ -3,28 +3,347 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pégase Automobile</title>
+  <title>Pégase Automobile — Voitures d'occasion</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f6f8;
+      color: #111;
+    }
+
+    header {
+      background: #0b0d10;
+      color: white;
+      padding: 20px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .logo span {
+      color: #d6a84f;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: bold;
+    }
+
+    .hero {
+      min-height: 430px;
+      background:
+        linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.65)),
+        url("https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1800&q=80")
+        center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      padding: 30px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      margin-bottom: 25px;
+    }
+
+    .button {
+      display: inline-block;
+      background: #d6a84f;
+      color: #111;
+      padding: 14px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    section {
+      max-width: 1200px;
+      margin: auto;
+      padding: 60px 20px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .title h2 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .cars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .car {
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .car img {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      background: #ddd;
+    }
+
+    .car-content {
+      padding: 20px;
+    }
+
+    .car h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .price {
+      color: #b1842f;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 12px 0;
+    }
+
+    .info {
+      color: #555;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 50px;
+      color: #777;
+      background: white;
+      border-radius: 12px;
+    }
+
+    .contact {
+      background: #0b0d10;
+      color: white;
+      max-width: none;
+      text-align: center;
+    }
+
+    .contact h2 {
+      margin-bottom: 15px;
+    }
+
+    .phone {
+      display: inline-block;
+      margin-top: 20px;
+      color: #d6a84f;
+      font-size: 28px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    footer {
+      background: #070809;
+      color: #aaa;
+      text-align: center;
+      padding: 25px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      header {
+        padding: 18px;
+      }
+
+      header a {
+        margin-left: 10px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Pégase Automobile</h1>
 
-  <h2>Votre spécialiste de la voiture d'occasion</h2>
+<header>
+  <div class="logo">PÉGASE <span>AUTOMOBILE</span></div>
 
-  <p>Des véhicules sélectionnés avec sérieux et transparence.</p>
+  <nav>
+    <a href="#vehicules">Véhicules</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
 
-  <h2>Nos véhicules</h2>
-  <p>Découvrez prochainement notre sélection de voitures d'occasion.</p>
+<section class="hero">
+  <div>
+    <h1>Pégase Automobile</h1>
+    <p>Votre spécialiste des voitures d'occasion</p>
+    <a href="#vehicules" class="button">Voir nos véhicules</a>
+  </div>
+</section>
 
-  <h2>Pourquoi Pégase Automobile ?</h2>
+<section id="vehicules">
 
-  <ul>
-    <li>Véhicules sélectionnés avec soin</li>
-    <li>Une approche sérieuse et transparente</li>
-    <li>Un accompagnement personnalisé</li>
-  </ul>
+  <div class="title">
+    <h2>Nos véhicules</h2>
+    <p>Découvrez nos voitures actuellement disponibles</p>
+  </div>
 
-  <h2>Contact</h2>
-  <p>Contactez-nous pour obtenir plus d'informations.</p>
+  <div id="cars" class="cars">
+    <div class="empty">Chargement des véhicules...</div>
+  </div>
+
+</section>
+
+<section id="contact" class="contact">
+
+  <h2>Une question ?</h2>
+  <p>Contactez Pégase Automobile pour obtenir plus d'informations.</p>
+
+  <a class="phone" href="tel:0643486124">
+    06 43 48 61 24
+  </a>
+
+</section>
+
+<footer>
+  © 2026 Pégase Automobile — Tous droits réservés
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+  // ==============================
+  // CONFIGURATION SUPABASE
+  // ==============================
+
+  const SUPABASE_URL = "https://rrojspgdsgxjhekyuxlq.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_qA0XGZifK4Xque85HxxsZg_lNrHgRuE";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+
+  // ==============================
+  // AFFICHER LES VOITURES
+  // ==============================
+
+  async function chargerVoitures() {
+
+    const { data, error } = await supabaseClient
+      .from("voitures")
+      .select("*")
+      .order("id", { ascending: false });
+
+    const container = document.getElementById("cars");
+
+    if (error) {
+      console.error(error);
+
+      container.innerHTML = `
+        <div class="empty">
+          Impossible de charger les véhicules.
+        </div>
+      `;
+
+      return;
+    }
+
+    if (!data || data.length === 0) {
+
+      container.innerHTML = `
+        <div class="empty">
+          Aucun véhicule disponible actuellement.
+        </div>
+      `;
+
+      return;
+    }
+
+    container.innerHTML = "";
+
+    data.forEach(voiture => {
+
+      const image = voiture.image_url ||
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=80";
+
+      const carte = document.createElement("div");
+
+      carte.className = "car";
+
+      carte.innerHTML = `
+        <img src="${image}" alt="${voiture.marque} ${voiture.modele}">
+
+        <div class="car-content">
+
+          <h3>
+            ${voiture.marque} ${voiture.modele}
+          </h3>
+
+          <div class="price">
+            ${Number(voiture.prix).toLocaleString("fr-FR")} €
+          </div>
+
+          <div class="info">
+
+            📅 ${voiture.annee || "-"}<br>
+
+            🛣️ ${voiture.kilometrage
+              ? Number(voiture.kilometrage).toLocaleString("fr-FR") + " km"
+              : "-"}<br>
+
+            ⛽ ${voiture.carburant || "-"}<br>
+
+            ⚙️ ${voiture.boite || "-"}<br>
+
+            ${voiture.description || ""}
+
+          </div>
+
+        </div>
+      `;
+
+      container.appendChild(carte);
+
+    });
+
+  }
+
+  chargerVoitures();
+
+</script>
+
 </body>
 </html>
