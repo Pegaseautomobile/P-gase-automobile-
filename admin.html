@@ -580,7 +580,7 @@
             error: uploadError
           } =
             await supabaseClient.storage
-              .from("voitures")
+              .from("Voiture")
               .upload(
                 nomFichier,
                 fichier,
@@ -606,7 +606,7 @@
             data: publicUrlData
           } =
             supabaseClient.storage
-              .from("voitures")
+              .from("Voiture")
               .getPublicUrl(
                 nomFichier
               );
