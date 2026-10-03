@@ -180,13 +180,16 @@
 </header>
 
 
+<!-- ============================= -->
 <!-- CONNEXION -->
+<!-- ============================= -->
 
 <div id="loginBox" class="box">
 
   <h2>Connexion administrateur</h2>
 
   <label>Email</label>
+
   <input
     type="email"
     id="email"
@@ -194,6 +197,7 @@
   >
 
   <label>Mot de passe</label>
+
   <input
     type="password"
     id="password"
@@ -209,11 +213,15 @@
 </div>
 
 
+<!-- ============================= -->
 <!-- ESPACE ADMIN -->
+<!-- ============================= -->
 
 <div id="adminContent">
 
   <div class="container">
+
+    <!-- AJOUTER UNE VOITURE -->
 
     <div class="box">
 
@@ -288,41 +296,23 @@
         </select>
 
 
-        <!-- PHOTO -->
+        <!-- ============================= -->
+        <!-- PHOTO GALERIE -->
+        <!-- ============================= -->
 
         <label>Photo du véhicule</label>
 
         <div class="photo-box">
 
-          <p>📸 Ajoute une photo du véhicule</p>
-
-          <button
-            type="button"
-            class="photo-button"
-            onclick="prendrePhoto()"
-          >
-            📷 Prendre une photo
-          </button>
+          <p>🖼️ Ajoute une photo du véhicule</p>
 
           <button
             type="button"
             class="photo-button"
             onclick="choisirPhoto()"
           >
-            🖼️ Choisir dans la galerie
+            🖼️ Importer une photo depuis la galerie
           </button>
-
-          <!-- Appareil photo -->
-
-          <input
-            type="file"
-            id="cameraInput"
-            class="hidden-input"
-            accept="image/*"
-            capture="environment"
-          >
-
-          <!-- Galerie -->
 
           <input
             type="file"
@@ -339,6 +329,10 @@
         </div>
 
 
+        <!-- ============================= -->
+        <!-- DESCRIPTION -->
+        <!-- ============================= -->
+
         <label>Description</label>
 
         <textarea
@@ -353,13 +347,14 @@
 
       </form>
 
-
       <div id="message" class="message"></div>
 
     </div>
 
 
+    <!-- ============================= -->
     <!-- LISTE DES VOITURES -->
+    <!-- ============================= -->
 
     <div class="box">
 
@@ -388,8 +383,7 @@
   // ⚠️ REMETS ICI TA CLÉ SUPABASE ACTUELLE
 
   const SUPABASE_KEY =
-    "sb_publishable_qA0XGZifK4Xque85HxxsZg_lNrHgRuE
-";
+    "TA_CLÉ_SUPABASE_ACTUELLE";
 
 
   const supabaseClient =
@@ -464,20 +458,7 @@
 
 
   // ==========================================
-  // OUVRIR APPAREIL PHOTO
-  // ==========================================
-
-  function prendrePhoto() {
-
-    document
-      .getElementById("cameraInput")
-      .click();
-
-  }
-
-
-  // ==========================================
-  // OUVRIR GALERIE
+  // CHOISIR UNE PHOTO DANS LA GALERIE
   // ==========================================
 
   function choisirPhoto() {
@@ -490,48 +471,27 @@
 
 
   // ==========================================
-  // RÉCUPÉRER LA PHOTO CHOISIE
+  // APERÇU DE LA PHOTO
   // ==========================================
-
-  function afficherApercu(fichier) {
-
-    if (!fichier) {
-      return;
-    }
-
-
-    const preview =
-      document.getElementById("preview");
-
-
-    preview.src =
-      URL.createObjectURL(fichier);
-
-
-    preview.style.display =
-      "block";
-
-  }
-
-
-  // Photo prise
-
-  document
-    .getElementById("cameraInput")
-    .addEventListener("change", function() {
-
-      afficherApercu(this.files[0]);
-
-    });
-
-
-  // Photo galerie
 
   document
     .getElementById("galleryInput")
     .addEventListener("change", function() {
 
-      afficherApercu(this.files[0]);
+      const fichier = this.files[0];
+
+      if (!fichier) {
+        return;
+      }
+
+      const preview =
+        document.getElementById("preview");
+
+      preview.src =
+        URL.createObjectURL(fichier);
+
+      preview.style.display =
+        "block";
 
     });
 
@@ -563,7 +523,7 @@
 
       try {
 
-        // Vérification connexion
+        // Vérifier que l'utilisateur est connecté
 
         const {
           data: { user }
@@ -584,27 +544,17 @@
         // RÉCUPÉRER LA PHOTO
         // ==================================
 
-        const cameraFile =
-          document
-            .getElementById("cameraInput")
-            .files[0];
-
-
-        const galleryFile =
+        const fichier =
           document
             .getElementById("galleryInput")
             .files[0];
-
-
-        const fichier =
-          cameraFile || galleryFile;
 
 
         let image_url = "";
 
 
         // ==================================
-        // UPLOAD PHOTO
+        // ENVOYER LA PHOTO DANS SUPABASE
         // ==================================
 
         if (fichier) {
@@ -649,7 +599,7 @@
 
 
           // ==================================
-          // URL PUBLIQUE
+          // RÉCUPÉRER L'URL PUBLIQUE
           // ==================================
 
           const {
@@ -727,7 +677,7 @@
 
 
         // ==================================
-        // ENREGISTRER DANS VOITURE
+        // ENREGISTRER DANS LA TABLE
         // ==================================
 
         const {
@@ -746,7 +696,7 @@
 
 
         // ==================================
-        // SUCCÈS
+        // MESSAGE DE SUCCÈS
         // ==================================
 
         message.className =
@@ -756,15 +706,21 @@
           "✅ Voiture ajoutée avec succès !";
 
 
+        // Vider le formulaire
+
         document
           .getElementById("carForm")
           .reset();
 
 
+        // Cacher l'aperçu
+
         document
           .getElementById("preview")
           .style.display = "none";
 
+
+        // Recharger la liste
 
         chargerVoitures();
 
