@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Administration - Pégase Automobile</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -28,7 +29,6 @@
 
     header h1 {
       margin: 0;
-      font-size: 25px;
     }
 
     .container {
@@ -74,7 +74,7 @@
     button {
       width: 100%;
       padding: 13px;
-      margin-top: 20px;
+      margin-top: 12px;
       border: none;
       border-radius: 8px;
       background: #111;
@@ -96,9 +96,16 @@
       margin-top: 10px;
     }
 
-    .photo-box input {
-      border: none;
-      padding: 10px 0;
+    .photo-box p {
+      margin-top: 0;
+    }
+
+    .photo-button {
+      background: #111;
+    }
+
+    .hidden-input {
+      display: none;
     }
 
     #preview {
@@ -172,18 +179,30 @@
   <p>Administration</p>
 </header>
 
+
 <!-- CONNEXION -->
+
 <div id="loginBox" class="box">
 
   <h2>Connexion administrateur</h2>
 
   <label>Email</label>
-  <input type="email" id="email" placeholder="Votre email">
+  <input
+    type="email"
+    id="email"
+    placeholder="Votre email"
+  >
 
   <label>Mot de passe</label>
-  <input type="password" id="password" placeholder="Votre mot de passe">
+  <input
+    type="password"
+    id="password"
+    placeholder="Votre mot de passe"
+  >
 
-  <button onclick="connexion()">Se connecter</button>
+  <button onclick="connexion()">
+    Se connecter
+  </button>
 
   <div id="loginMessage" class="message"></div>
 
@@ -191,6 +210,7 @@
 
 
 <!-- ESPACE ADMIN -->
+
 <div id="adminContent">
 
   <div class="container">
@@ -202,62 +222,137 @@
       <form id="carForm">
 
         <label>Marque</label>
-        <input type="text" id="marque" required>
+
+        <input
+          type="text"
+          id="marque"
+          required
+        >
+
 
         <label>Modèle</label>
-        <input type="text" id="modele" required>
+
+        <input
+          type="text"
+          id="modele"
+          required
+        >
+
 
         <label>Prix (€)</label>
-        <input type="number" id="prix" required>
+
+        <input
+          type="number"
+          id="prix"
+          required
+        >
+
 
         <label>Année</label>
-        <input type="number" id="annee" required>
+
+        <input
+          type="number"
+          id="annee"
+          required
+        >
+
 
         <label>Kilométrage</label>
-        <input type="number" id="kilometrage" required>
+
+        <input
+          type="number"
+          id="kilometrage"
+          required
+        >
+
 
         <label>Carburant</label>
+
         <select id="carburant">
+
           <option>Essence</option>
           <option>Diesel</option>
           <option>Hybride</option>
           <option>Électrique</option>
+
         </select>
+
 
         <label>Boîte</label>
+
         <select id="boite">
+
           <option>Manuelle</option>
           <option>Automatique</option>
+
         </select>
 
+
         <!-- PHOTO -->
+
         <label>Photo du véhicule</label>
 
         <div class="photo-box">
 
-          <p>📸 Prendre une photo ou choisir une image</p>
+          <p>📸 Ajoute une photo du véhicule</p>
+
+          <button
+            type="button"
+            class="photo-button"
+            onclick="prendrePhoto()"
+          >
+            📷 Prendre une photo
+          </button>
+
+          <button
+            type="button"
+            class="photo-button"
+            onclick="choisirPhoto()"
+          >
+            🖼️ Choisir dans la galerie
+          </button>
+
+          <!-- Appareil photo -->
 
           <input
             type="file"
-            id="photo"
+            id="cameraInput"
+            class="hidden-input"
+            accept="image/*"
+            capture="environment"
+          >
+
+          <!-- Galerie -->
+
+          <input
+            type="file"
+            id="galleryInput"
+            class="hidden-input"
             accept="image/*"
           >
 
-          <img id="preview" alt="Aperçu de la voiture">
+          <img
+            id="preview"
+            alt="Aperçu de la voiture"
+          >
 
         </div>
 
+
         <label>Description</label>
+
         <textarea
           id="description"
           placeholder="Décrivez le véhicule..."
         ></textarea>
 
+
         <button type="submit">
-          Ajouter la voiture
+          🚗 Ajouter la voiture
         </button>
 
       </form>
+
 
       <div id="message" class="message"></div>
 
@@ -283,267 +378,451 @@
 
 <script>
 
-  // ==============================
+  // ==========================================
   // SUPABASE
-  // ==============================
+  // ==========================================
 
-  const SUPABASE_URL = "https://rrojspgdsgxjhekyuxlq.supabase.co";
+  const SUPABASE_URL =
+    "https://rrojspgdsgxjhekyuxlq.supabase.co";
 
-  const SUPABASE_KEY = "sb_publishable_qA0XGZifK4Xque85HxxsZg_lNrHgRuE";
+  // ⚠️ REMETS ICI TA CLÉ SUPABASE ACTUELLE
 
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+  const SUPABASE_KEY =
+    "TA_CLÉ_SUPABASE_ACTUELLE";
 
 
-  // ==============================
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  // ==========================================
   // CONNEXION
-  // ==============================
+  // ==========================================
 
   async function connexion() {
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email =
+      document.getElementById("email").value;
 
-    const message = document.getElementById("loginMessage");
+    const password =
+      document.getElementById("password").value;
+
+    const message =
+      document.getElementById("loginMessage");
+
 
     message.style.display = "block";
+
     message.className = "message";
+
     message.textContent = "Connexion...";
+
 
     const { data, error } =
       await supabaseClient.auth.signInWithPassword({
+
         email: email,
         password: password
+
       });
+
 
     if (error) {
 
-      message.className = "message error";
-      message.textContent = error.message;
+      message.className =
+        "message error";
+
+      message.textContent =
+        error.message;
 
       return;
     }
 
-    message.className = "message success";
-    message.textContent = "Connexion réussie !";
 
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("adminContent").style.display = "block";
+    message.className =
+      "message success";
+
+    message.textContent =
+      "Connexion réussie !";
+
+
+    document.getElementById("loginBox")
+      .style.display = "none";
+
+
+    document.getElementById("adminContent")
+      .style.display = "block";
+
 
     chargerVoitures();
+
   }
 
 
-  // ==============================
-  // APERÇU PHOTO
-  // ==============================
+  // ==========================================
+  // OUVRIR APPAREIL PHOTO
+  // ==========================================
 
-  document.getElementById("photo").addEventListener("change", function(event) {
+  function prendrePhoto() {
 
-    const fichier = event.target.files[0];
+    document
+      .getElementById("cameraInput")
+      .click();
+
+  }
+
+
+  // ==========================================
+  // OUVRIR GALERIE
+  // ==========================================
+
+  function choisirPhoto() {
+
+    document
+      .getElementById("galleryInput")
+      .click();
+
+  }
+
+
+  // ==========================================
+  // RÉCUPÉRER LA PHOTO CHOISIE
+  // ==========================================
+
+  function afficherApercu(fichier) {
 
     if (!fichier) {
       return;
     }
 
-    const preview = document.getElementById("preview");
 
-    preview.src = URL.createObjectURL(fichier);
-    preview.style.display = "block";
-
-  });
+    const preview =
+      document.getElementById("preview");
 
 
-  // ==============================
+    preview.src =
+      URL.createObjectURL(fichier);
+
+
+    preview.style.display =
+      "block";
+
+  }
+
+
+  // Photo prise
+
+  document
+    .getElementById("cameraInput")
+    .addEventListener("change", function() {
+
+      afficherApercu(this.files[0]);
+
+    });
+
+
+  // Photo galerie
+
+  document
+    .getElementById("galleryInput")
+    .addEventListener("change", function() {
+
+      afficherApercu(this.files[0]);
+
+    });
+
+
+  // ==========================================
   // AJOUTER UNE VOITURE
-  // ==============================
+  // ==========================================
 
-  document.getElementById("carForm").addEventListener("submit", async function(event) {
+  document
+    .getElementById("carForm")
+    .addEventListener("submit", async function(event) {
 
-    event.preventDefault();
-
-    const message = document.getElementById("message");
-
-    message.style.display = "block";
-    message.className = "message";
-    message.textContent = "Ajout de la voiture...";
+      event.preventDefault();
 
 
-    try {
-
-      // Vérifier la connexion
-      const {
-        data: { user }
-      } = await supabaseClient.auth.getUser();
-
-      if (!user) {
-        throw new Error("Vous devez être connecté.");
-      }
+      const message =
+        document.getElementById("message");
 
 
-      // Récupérer la photo
-      const fichier = document.getElementById("photo").files[0];
+      message.style.display =
+        "block";
 
-      let image_url = "";
+      message.className =
+        "message";
 
-
-      // ==============================
-      // UPLOAD PHOTO
-      // ==============================
-
-      if (fichier) {
-
-        const extension =
-          fichier.name.split(".").pop();
-
-        const nomFichier =
-          Date.now() +
-          "-" +
-          Math.random().toString(36).substring(2) +
-          "." +
-          extension;
+      message.textContent =
+        "Ajout de la voiture...";
 
 
-        const { error: uploadError } =
-          await supabaseClient.storage
-            .from("voitures")
-            .upload(nomFichier, fichier, {
-              cacheControl: "3600",
-              upsert: false
-            });
+      try {
+
+        // Vérification connexion
+
+        const {
+          data: { user }
+        } =
+          await supabaseClient.auth.getUser();
 
 
-        if (uploadError) {
-          throw uploadError;
+        if (!user) {
+
+          throw new Error(
+            "Vous devez être connecté."
+          );
+
         }
 
 
-        // URL publique de la photo
+        // ==================================
+        // RÉCUPÉRER LA PHOTO
+        // ==================================
+
+        const cameraFile =
+          document
+            .getElementById("cameraInput")
+            .files[0];
+
+
+        const galleryFile =
+          document
+            .getElementById("galleryInput")
+            .files[0];
+
+
+        const fichier =
+          cameraFile || galleryFile;
+
+
+        let image_url = "";
+
+
+        // ==================================
+        // UPLOAD PHOTO
+        // ==================================
+
+        if (fichier) {
+
+          const extension =
+            fichier.name
+              .split(".")
+              .pop()
+              .toLowerCase();
+
+
+          const nomFichier =
+            Date.now() +
+            "-" +
+            Math.random()
+              .toString(36)
+              .substring(2) +
+            "." +
+            extension;
+
+
+          const {
+            error: uploadError
+          } =
+            await supabaseClient.storage
+              .from("voitures")
+              .upload(
+                nomFichier,
+                fichier,
+                {
+                  cacheControl: "3600",
+                  upsert: false
+                }
+              );
+
+
+          if (uploadError) {
+
+            throw uploadError;
+
+          }
+
+
+          // ==================================
+          // URL PUBLIQUE
+          // ==================================
+
+          const {
+            data: publicUrlData
+          } =
+            supabaseClient.storage
+              .from("voitures")
+              .getPublicUrl(
+                nomFichier
+              );
+
+
+          image_url =
+            publicUrlData.publicUrl;
+
+        }
+
+
+        // ==================================
+        // CRÉER LA VOITURE
+        // ==================================
+
+        const voiture = {
+
+          marque:
+            document
+              .getElementById("marque")
+              .value,
+
+          modele:
+            document
+              .getElementById("modele")
+              .value,
+
+          prix:
+            Number(
+              document
+                .getElementById("prix")
+                .value
+            ),
+
+          annee:
+            Number(
+              document
+                .getElementById("annee")
+                .value
+            ),
+
+          kilometrage:
+            Number(
+              document
+                .getElementById("kilometrage")
+                .value
+            ),
+
+          carburant:
+            document
+              .getElementById("carburant")
+              .value,
+
+          boite:
+            document
+              .getElementById("boite")
+              .value,
+
+          image_url:
+            image_url,
+
+          description:
+            document
+              .getElementById("description")
+              .value
+
+        };
+
+
+        // ==================================
+        // ENREGISTRER DANS VOITURE
+        // ==================================
 
         const {
-          data: publicUrlData
+          error
         } =
-          supabaseClient.storage
-            .from("voitures")
-            .getPublicUrl(nomFichier);
+          await supabaseClient
+            .from("Voiture")
+            .insert([voiture]);
 
 
-        image_url =
-          publicUrlData.publicUrl;
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        // ==================================
+        // SUCCÈS
+        // ==================================
+
+        message.className =
+          "message success";
+
+        message.textContent =
+          "✅ Voiture ajoutée avec succès !";
+
+
+        document
+          .getElementById("carForm")
+          .reset();
+
+
+        document
+          .getElementById("preview")
+          .style.display = "none";
+
+
+        chargerVoitures();
+
+
+      } catch (error) {
+
+        console.error(error);
+
+
+        message.className =
+          "message error";
+
+
+        message.textContent =
+          "❌ Erreur : " +
+          error.message;
+
       }
 
-
-      // ==============================
-      // CRÉER LA VOITURE
-      // ==============================
-
-      const voiture = {
-
-        marque:
-          document.getElementById("marque").value,
-
-        modele:
-          document.getElementById("modele").value,
-
-        prix:
-          Number(
-            document.getElementById("prix").value
-          ),
-
-        annee:
-          Number(
-            document.getElementById("annee").value
-          ),
-
-        kilometrage:
-          Number(
-            document.getElementById("kilometrage").value
-          ),
-
-        carburant:
-          document.getElementById("carburant").value,
-
-        boite:
-          document.getElementById("boite").value,
-
-        image_url:
-          image_url,
-
-        description:
-          document.getElementById("description").value
-      };
+    });
 
 
-      // ==============================
-      // ENREGISTRER DANS SUPABASE
-      // ==============================
-
-      const { error } =
-        await supabaseClient
-          .from("Voiture")
-          .insert([voiture]);
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      // ==============================
-      // SUCCÈS
-      // ==============================
-
-      message.className = "message success";
-      message.textContent =
-        "✅ Voiture ajoutée avec succès !";
-
-
-      document.getElementById("carForm").reset();
-
-      document.getElementById("preview").style.display = "none";
-
-      chargerVoitures();
-
-    } catch (error) {
-
-      console.error(error);
-
-      message.className = "message error";
-
-      message.textContent =
-        "❌ Erreur : " + error.message;
-    }
-
-  });
-
-
-  // ==============================
-  // AFFICHER LES VOITURES
-  // ==============================
+  // ==========================================
+  // CHARGER LES VOITURES
+  // ==========================================
 
   async function chargerVoitures() {
 
     const carsList =
       document.getElementById("carsList");
 
-    carsList.innerHTML = "Chargement...";
+
+    carsList.innerHTML =
+      "Chargement...";
 
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("Voiture")
         .select("*")
-        .order("id", { ascending: false });
+        .order(
+          "id",
+          {
+            ascending: false
+          }
+        );
 
 
     if (error) {
 
       carsList.innerHTML =
-        "Erreur : " + error.message;
+        "Erreur : " +
+        error.message;
 
       return;
+
     }
 
 
@@ -553,6 +832,7 @@
         "Aucune voiture pour le moment.";
 
       return;
+
     }
 
 
@@ -564,23 +844,33 @@
       const div =
         document.createElement("div");
 
-      div.className = "car";
+
+      div.className =
+        "car";
 
 
       div.innerHTML = `
 
         ${
           voiture.image_url
-            ? `<img src="${voiture.image_url}" alt="${voiture.marque} ${voiture.modele}">`
+            ? `
+              <img
+                src="${voiture.image_url}"
+                alt="${voiture.marque} ${voiture.modele}"
+              >
+            `
             : ""
         }
 
         <h3>
-          ${voiture.marque} ${voiture.modele}
+          ${voiture.marque}
+          ${voiture.modele}
         </h3>
 
         <p>
-          <strong>${voiture.prix} €</strong>
+          <strong>
+            ${voiture.prix} €
+          </strong>
         </p>
 
         <p>
@@ -608,6 +898,7 @@
 
       `;
 
+
       carsList.appendChild(div);
 
     });
@@ -615,9 +906,9 @@
   }
 
 
-  // ==============================
+  // ==========================================
   // SUPPRIMER UNE VOITURE
-  // ==============================
+  // ==========================================
 
   async function supprimerVoiture(id) {
 
@@ -626,12 +917,15 @@
         "Voulez-vous vraiment supprimer cette voiture ?"
       );
 
+
     if (!confirmation) {
       return;
     }
 
 
-    const { error } =
+    const {
+      error
+    } =
       await supabaseClient
         .from("Voiture")
         .delete()
@@ -646,10 +940,14 @@
       );
 
       return;
+
     }
 
 
-    alert("Voiture supprimée.");
+    alert(
+      "Voiture supprimée."
+    );
+
 
     chargerVoitures();
 
