@@ -344,7 +344,7 @@ async function chargerVoitures() {
 
   const { data, error } =
     await supabaseClient
-      .from("voitures")
+      .from("Voiture")
       .select("*")
       .order("id", { ascending: false });
 
@@ -425,7 +425,7 @@ async function supprimerVoiture(id) {
 
   const { error } =
     await supabaseClient
-      .from("voitures")
+      .from("Voiture")
       .delete()
       .eq("id", id);
 
